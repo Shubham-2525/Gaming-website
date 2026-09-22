@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shubham Shooting Game</title>
+<style>
+body {
+  margin: 0;
+  background: #111;
+  color: white;
+  text-align: center;
+  font-family: Arial;
+}
+h1 { color: cyan; }
+canvas {
+  background: #222;
+  border: 2px solid cyan;
+  max-width: 95%;
+  touch-action: none;
+}
+button {
+  padding: 15px 30px;
+  font-size: 20px;
+  background: cyan;
+  border: none;
+  border-radius: 10px;
+  margin: 10px;
+}
+</style>
+</head>
+<body>
 
+<h1>🎮 SHUBHAM SHOOTING</h1>
+<p>Enemy को गोली मारो!</p>
+
+<canvas id="game" width="350" height="500"></canvas>
+<br>
+<button onclick="shoot()">🔫 SHOOT</button>
+<button onclick="location.reload()">🔄 RESTART</button>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let player = { x: 160, y: 440, size: 30 };
+let enemy = { x: 150, y: 50, size: 30 };
+let bullet = null;
+let score = 0;
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Player
+  ctx.fillStyle = "cyan";
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+
+  // Enemy
+  ctx.fillStyle = "red";
+  ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+
+  // Bullet
+  if (bullet) {
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(bullet.x, bullet.y, 5, 15);
+  }
+
+  ctx.fillStyle = "white";
+  ctx.font = "18px Arial";
+  ctx.fillText("Score: " + score, 10, 25);
+
+  requestAnimationFrame(draw);
+}
+
+function shoot() {
+  bullet = {
+    x: player.x + 13,
+    y: player.y
+  };
+}
+
+setInterval(() => {
+  if (bullet) {
+    bullet.y -= 8;
+
+    if (
+      bullet.x > enemy.x &&
+      bullet.x < enemy.x + enemy.size &&
+      bullet.y < enemy.y + enemy.size
+    ) {
+      score++;
+      enemy.x = Math.random() * 310;
+      enemy.y = 40;
+      bullet = null;
+    }
+
+    if (bullet && bullet.y < 0) {
+      bullet = null;
+    }
+  }
+}, 30);
+
+canvas.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  let touch = e.touches[0];
+  let rect = canvas.getBoundingClientRect();
+
+  player.x = (touch.clientX - rect.left) *
+    (canvas.width / rect.width) - 15;
+
+  player.x = Math.max(0, Math.min(canvas.width - 30, player.x));
+});
+
+draw();
+</script>
+
+</body>
+</html>
